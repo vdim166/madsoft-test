@@ -6,3 +6,7 @@ export enum AnswerTypes {
   DetailedAnswer,
   End,
 }
+
+export interface SurveyResponse {
+  [key: string]: string | string[]
+}

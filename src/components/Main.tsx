@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import BottomNavigationa from "./BottomNavigationa"
 import ProgressBar from "./ProgressBar"
 import { SingleAnswer } from "./QuestionTypes/SingleAnswer"
@@ -7,43 +7,46 @@ import { ShortAnswer } from "./QuestionTypes/ShortAnswer"
 import { DetailedAnswer } from "./QuestionTypes/DetailedAnswer"
 import { StartPage } from "./StartPage"
 import { CreateTest } from "../utils"
-import { AnswerTypes } from "../Types"
+import { AnswerTypes, SurveyResponse } from "../Types"
 import { useTimer } from "../hooks/useTimer"
 import Timer from "./Timer"
 import { ResultPage } from "./ResultPage"
-
-const testBuilder = new CreateTest()
-
-testBuilder
-  .addTest(AnswerTypes.SingleAnswer, "How many apples in the basket?", [
-    "2 apples",
-    "3 apples",
-    "5 apples",
-  ])
-  .addTest(AnswerTypes.MultipleAnswers, "What is your favorites languages?", [
-    "Russian",
-    "German",
-    "Italian",
-    "English",
-  ])
-  .addTest(AnswerTypes.ShortAnswer, "What is your favorite food?")
-  .addTest(
-    AnswerTypes.DetailedAnswer,
-    "What is you favorite season? Describe why and use atleast 100 words"
-  )
-
-const test = testBuilder.build()
-console.log("test", test)
-interface SurveyResponse {
-  [key: string]: string | string[]
-}
+import { AppContext } from "../context/answerContext"
 
 const MainComponent = () => {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(() => {
+    const currentStepLocal = localStorage.getItem("currentStep")
+
+    return currentStepLocal ? Number(currentStepLocal) : 0
+  })
+
   const [answers, setAnswers] = useState<SurveyResponse>(() => {
     const saved = localStorage.getItem("answers")
+
     return saved ? JSON.parse(saved) : {}
   })
+
+  const test = useMemo(() => {
+    const testBuilder = new CreateTest()
+
+    testBuilder
+      .addTest(AnswerTypes.SingleAnswer, "How many apples in the basket?", [
+        "2 apples",
+        "3 apples",
+        "5 apples",
+      ])
+      .addTest(
+        AnswerTypes.MultipleAnswers,
+        "What is your favorites languages?",
+        ["Russian", "German", "Italian", "English"]
+      )
+      .addTest(AnswerTypes.ShortAnswer, "What is your favorite food?")
+      .addTest(
+        AnswerTypes.DetailedAnswer,
+        "What is you favorite season? Describe why and use atleast 100 words"
+      )
+    return testBuilder.build()
+  }, [])
 
   const { timeLeft, startTimer, stopTimer } = useTimer()
 
@@ -128,23 +131,27 @@ const MainComponent = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="relative w-full max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold mb-4 font-roboto">Тестирование</h1>
-          <Timer timeLeft={timeLeft} />
+    <AppContext.Provider value={{ answers: answers }}>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div className="relative w-full max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold mb-4 font-roboto">
+              Тестирование
+            </h1>
+            <Timer timeLeft={timeLeft} />
+          </div>
+          <ProgressBar currentStep={currentStep} testLength={test.length} />
+          {renderStep()}
+          <BottomNavigationa
+            currentStep={currentStep}
+            testLength={test.length}
+            handleNext={handleNext}
+            startTimer={startTimer}
+            stopTimer={stopTimer}
+          />
         </div>
-        <ProgressBar currentStep={currentStep} testLength={test.length} />
-        {renderStep()}
-        <BottomNavigationa
-          currentStep={currentStep}
-          testLength={test.length}
-          handleNext={handleNext}
-          startTimer={startTimer}
-          stopTimer={stopTimer}
-        />
       </div>
-    </div>
+    </AppContext.Provider>
   )
 }
 

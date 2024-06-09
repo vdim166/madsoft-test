@@ -1,3 +1,6 @@
+import { useContext } from "react"
+import { AppContext } from "../../context/answerContext"
+
 type SingleAnswerProps = {
   handleChange: (
     e:
@@ -8,13 +11,13 @@ type SingleAnswerProps = {
   options: string[]
 }
 
-// TODO:
-
 export const SingleAnswer = ({
   handleChange,
   questionName,
   options,
 }: SingleAnswerProps) => {
+  const state = useContext(AppContext).answers
+
   return (
     <div className="mb-4">
       <label
@@ -31,7 +34,7 @@ export const SingleAnswer = ({
               className="form-radio"
               name={questionName}
               value={option}
-              // checked={answers.question1 === "option1"}
+              checked={state[questionName] === option}
               onChange={handleChange}
             />
             <span className="ml-2 font-roboto">{option}</span>

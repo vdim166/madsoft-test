@@ -1,3 +1,6 @@
+import { useContext } from "react"
+import { AppContext } from "../../context/answerContext"
+
 type DetailedAnswerProps = {
   handleChange: (
     e:
@@ -11,6 +14,9 @@ export const DetailedAnswer = ({
   handleChange,
   questionName,
 }: DetailedAnswerProps) => {
+  const state = useContext(AppContext).answers
+  const answer = state[questionName] || ""
+
   return (
     <div className="mb-4">
       <label
@@ -20,10 +26,10 @@ export const DetailedAnswer = ({
         {questionName}
       </label>
       <textarea
+        value={answer}
         name={questionName}
         id={questionName}
         className="w-full h-[150px] px-3 py-2 border border-gray-300 rounded-md"
-        // value={answers.question4 || ""}
         onChange={handleChange}
       ></textarea>
     </div>

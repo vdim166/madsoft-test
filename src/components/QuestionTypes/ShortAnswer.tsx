@@ -1,3 +1,6 @@
+import { useContext } from "react"
+import { AppContext } from "../../context/answerContext"
+
 type ShortAnswerProps = {
   handleChange: (
     e:
@@ -11,6 +14,9 @@ export const ShortAnswer = ({
   handleChange,
   questionName,
 }: ShortAnswerProps) => {
+  const state = useContext(AppContext).answers
+  const answer = state[questionName] || ""
+
   return (
     <div className="mb-4">
       <label
@@ -20,11 +26,11 @@ export const ShortAnswer = ({
         {questionName}
       </label>
       <input
+        value={answer}
         type="text"
         name={questionName}
         id={questionName}
         className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        // value={answers.question3 || ""}
         onChange={handleChange}
       />
     </div>

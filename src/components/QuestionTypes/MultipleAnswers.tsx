@@ -1,3 +1,6 @@
+import { useContext } from "react"
+import { AppContext } from "../../context/answerContext"
+
 type MultipleAnswersProps = {
   handleChange: (
     e:
@@ -14,6 +17,8 @@ export const MultipleAnswers = ({
   questionName,
   options,
 }: MultipleAnswersProps) => {
+  const state = useContext(AppContext).answers
+
   return (
     <div className="mb-4">
       <label
@@ -30,7 +35,7 @@ export const MultipleAnswers = ({
               className="form-checkbox"
               name={questionName}
               value={option}
-              // checked={answers.question2?.includes("option1")}
+              checked={state[questionName]?.includes(option)}
               onChange={handleChange}
             />
             <span className="ml-2 font-roboto">{option}</span>
