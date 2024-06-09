@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import BottomNavigationa from "./BottomNavigationa"
+import BottomNavigation from "./BottomNavigation"
 import ProgressBar from "./ProgressBar"
 import { SingleAnswer } from "./QuestionTypes/SingleAnswer"
 import { MultipleAnswers } from "./QuestionTypes/MultipleAnswers"
@@ -48,7 +48,11 @@ const MainComponent = () => {
     return testBuilder.build()
   }, [])
 
-  const { timeLeft, startTimer, stopTimer } = useTimer()
+  const timeEndsFn = () => {
+    setCurrentStep(test.length - 1)
+  }
+
+  const { timeLeft, startTimer, stopTimer } = useTimer(timeEndsFn)
 
   useEffect(() => {
     localStorage.setItem("answers", JSON.stringify(answers))
@@ -70,7 +74,7 @@ const MainComponent = () => {
 
           const newValues = checked
             ? [...prevValues, value]
-            : prevValues.filter((v: any) => v !== value)
+            : prevValues.filter((v) => v !== value)
 
           return { ...prev, [name]: newValues }
         } else {
@@ -131,7 +135,16 @@ const MainComponent = () => {
   }
 
   return (
-    <AppContext.Provider value={{ answers: answers }}>
+    <AppContext.Provider
+      value={{
+        answers: answers,
+        currentStep,
+        testLength: test.length,
+        test,
+        startTimer,
+        stopTimer,
+      }}
+    >
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
         <div className="relative w-full max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
           <div className="flex justify-between items-center">
@@ -140,15 +153,9 @@ const MainComponent = () => {
             </h1>
             <Timer timeLeft={timeLeft} />
           </div>
-          <ProgressBar currentStep={currentStep} testLength={test.length} />
+          <ProgressBar />
           {renderStep()}
-          <BottomNavigationa
-            currentStep={currentStep}
-            testLength={test.length}
-            handleNext={handleNext}
-            startTimer={startTimer}
-            stopTimer={stopTimer}
-          />
+          <BottomNavigation handleNext={handleNext} />
         </div>
       </div>
     </AppContext.Provider>

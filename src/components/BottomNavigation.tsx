@@ -1,18 +1,14 @@
+import { useContext } from "react"
+import { AppContext } from "../context/answerContext"
+
 type BottomNavProps = {
-  currentStep: number
-  testLength: number
   handleNext: () => void
-  startTimer: () => void
-  stopTimer: () => void
 }
 
-export default function BottomNavigation({
-  currentStep,
-  testLength,
-  handleNext,
-  startTimer,
-  stopTimer,
-}: BottomNavProps) {
+export default function BottomNavigation({ handleNext }: BottomNavProps) {
+  const { currentStep, testLength, answers, test, startTimer, stopTimer } =
+    useContext(AppContext)
+
   const isStart = currentStep === 0
 
   if (isStart) {
@@ -35,6 +31,20 @@ export default function BottomNavigation({
   const isLastQuestion = currentStep === testLength - 2
   const isEnd = currentStep === testLength - 1
 
+  const validationQuestionHandle = () => {
+    const questionName = test[currentStep].questionName
+
+    if (answers[questionName]) {
+      if (Array.isArray(answers[questionName])) {
+        return answers[questionName].length > 0
+      }
+
+      return true
+    }
+
+    return false
+  }
+
   const isLastQuestionHandle = () => {
     localStorage.setItem("currentStep", JSON.stringify(currentStep + 1))
     stopTimer()
@@ -46,6 +56,9 @@ export default function BottomNavigation({
     handleNext()
   }
 
+  const buttonIsActive = !validationQuestionHandle()
+  //
+
   return (
     <div className="flex justify-between">
       {!isEnd && (
@@ -53,8 +66,10 @@ export default function BottomNavigation({
           onClick={
             isLastQuestion ? isLastQuestionHandle : regularQuestionHandle
           }
-          className="px-4 py-2 bg-blue-500 text-white rounded-md font-roboto"
-          disabled={isEnd}
+          className={`px-4 py-2 ${
+            buttonIsActive ? "bg-gray-500" : "bg-blue-500"
+          } text-white rounded-md font-roboto `}
+          disabled={buttonIsActive}
         >
           Ответить
         </button>

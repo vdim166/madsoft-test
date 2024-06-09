@@ -1,12 +1,9 @@
-type ProgressBarProps = {
-  currentStep: number
-  testLength: number
-}
+import { useContext } from "react"
+import { AppContext } from "../context/answerContext"
 
-export default function ProgressBar({
-  currentStep,
-  testLength,
-}: ProgressBarProps) {
+export default function ProgressBar() {
+  const { currentStep, testLength } = useContext(AppContext)
+
   const progressPercentage =
     currentStep === 1 || currentStep === 0
       ? 0

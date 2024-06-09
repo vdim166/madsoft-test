@@ -1,11 +1,7 @@
-import { AnswerTypes } from "./Types"
+import { AnswerTypes, TestType } from "./Types"
 
 export class CreateTest {
-  private tests: {
-    type: AnswerTypes
-    questionName: string
-    options?: string[]
-  }[] = []
+  private tests: TestType[] = []
 
   constructor(welcomePrompt = "Вы готовы к тестированию?") {
     this.tests.push({ type: AnswerTypes.Start, questionName: welcomePrompt })

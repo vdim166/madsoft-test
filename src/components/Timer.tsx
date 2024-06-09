@@ -1,6 +1,3 @@
-// TODO: time left in storage
-// TODO: validation
-// TODO: end then time ends
 type TimerProps = {
   timeLeft: number
 }

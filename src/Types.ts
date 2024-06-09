@@ -7,6 +7,12 @@ export enum AnswerTypes {
   End,
 }
 
+export type TestType = {
+  type: AnswerTypes
+  questionName: string
+  options?: string[]
+}
+
 export interface SurveyResponse {
   [key: string]: string | string[]
 }
